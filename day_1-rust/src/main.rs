@@ -79,7 +79,7 @@ fn main() {
        R2 L5 L2 R4 L1 R3 L5 L2 R5 L4 R5 L5 R3 R4 L3 L3 L2 R2 L5 L5 R3 R4 R3 R4 R3 \
        R1");
     let mut lst = s.split_whitespace();
-    let list_of_instructions = lst.map(|something| Instruction::from_str(something));
+    let list_of_instructions = lst.map(Instruction::from_str);
 
     for instruction in list_of_instructions {
         let instruct = instruction.unwrap();
