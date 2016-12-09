@@ -10,8 +10,8 @@ pub enum Direction {
     South,
     West
 }
-#[derive(Debug)]
-pub struct Point {
+#[derive(Hash, Eq, PartialEq, Debug, Clone)]
+pub struct Block {
     x: i32,
     y: i32
 }
@@ -25,7 +25,7 @@ pub enum Turn {
 #[derive(Debug)]
 pub struct Instruction {
     turn: Turn,
-    steps: i32
+    blocks: i32
 }
 
 /// An error returned when parsing a `bool` from a string fails.
@@ -43,8 +43,8 @@ impl FromStr for Instruction {
             Some("R") => Turn::R,
             _ => return Err(ParseInstructionError{ _priv: ()})
         };
-        let steps = i32::from_str(cap.at(2).unwrap()).unwrap();
-        Ok(Instruction{turn: turn, steps: steps})
+        let blocks = i32::from_str(cap.at(2).unwrap()).unwrap();
+        Ok(Instruction{turn: turn, blocks: blocks})
     }
 }
 
@@ -69,7 +69,7 @@ pub fn turn(input: &Instruction, face: &Direction) -> Direction {
 
 fn main() {
     let mut face = Direction::North;
-    let mut point = Point{x: 0, y: 0};
+    let mut block = Block{x: 0, y: 0};
 
     let mut s = String::from("R3 L2 L2 R4 L1 R2 R3 R4 L2 R4 L2 L5 L1 R5 R2 R2 L1 R4 R1 L5 L3 R4 R3 R1 L1 \
        L5 L4 L2 R5 L3 L4 R3 R1 L3 R1 L3 R3 L4 R2 R5 L190 R2 L3 R47 R4 L3 R78 L1 R3 \
@@ -80,17 +80,18 @@ fn main() {
        R1");
     let mut lst = s.split_whitespace();
     let list_of_instructions = lst.map(Instruction::from_str);
+    let mut visited_blocks = HashMap::new();
 
     for instruction in list_of_instructions {
         let instruct = instruction.unwrap();
         face = turn(&instruct, &face);
         match face {
-            Direction::North => point.y += instruct.steps,
-            Direction::South => point.y -= instruct.steps,
-            Direction::East => point.x += instruct.steps,
-            Direction::West => point.x -= instruct.steps
+            Direction::North => block.y += instruct.blocks,
+            Direction::South => block.y -= instruct.blocks,
+            Direction::East => block.x += instruct.blocks,
+            Direction::West => block.x -= instruct.blocks
         }
     }
 
-    println!("{:?}", point.x.abs() + point.y.abs());
+    println!("{:?}", block.x.abs() + block.y.abs());
 }
